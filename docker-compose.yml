@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # ------------------------------------
+  # 1. Postgres Database
+  # ------------------------------------
+  postgres:
+    image: theshultz/kaplat-calculator-postgres-instance:latest
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # ------------------------------------
+  # 2. MongoDB Database
+  # ------------------------------------
+  mongo:
+    image: theshultz/kaplat-calculator-mongo-instance:latest
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+
+  # ------------------------------------
+  # 3. Your Calculator Application
+  # ------------------------------------
+  calculator:
+    # TODO: REPLACE THIS with your actual Docker Hub image name!
+    # Example: image: israeli123/calculator-server:latest
+    image: edanglobus/kaplat-image-edan-globus:latest
+
+    container_name: calculator-server
+
+    # Map External Port 4785 -> Internal Port 8496 (As per instructions)
+    ports:
+      - "4785:8496"
+
+    # Ensure DBs start before the app
+    depends_on:
+      - postgres
+      - mongo
+
+    # These Environment Variables override your application.properties
+    # This switches the connection from 'localhost' to the container names.
+    environment:
+      # Connect to the service named 'postgres'
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/operations
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: docker
+
+      # Connect to the service named 'mongo'
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/calculator

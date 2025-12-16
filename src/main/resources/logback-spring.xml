@@ -1,21 +1,21 @@
 <configuration>
 
     <appender name="FILE_REQ" class="ch.qos.logback.core.FileAppender">
-        <file>requests.log</file>
+        <file>logs/requests.log</file>
         <append>false</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="FILE_STACK" class="ch.qos.logback.core.FileAppender">
-        <file>stack.log</file>
+        <file>logs/stack.log</file>
         <append>false</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %msg | request #%X{reqNum}%n</pattern>
         </encoder>
     </appender>
     <appender name="FILE_INDEPENDENT" class="ch.qos.logback.core.FileAppender">
-        <file>independent.log</file>
+        <file>logs/independent.log</file>
         <append>false</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %msg | request #%X{reqNum}%n</pattern>

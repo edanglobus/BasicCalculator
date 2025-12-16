@@ -1,4 +1,4 @@
-package com.example.KaplatC.apis;
+package com.example.KaplatCalculatorApp.apis;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +14,9 @@ public abstract class BaseController {
 
     public long writeLoggerInfo(String resource, String httpVerb) {
         MDC.clear();
+        MDC.put("reqNum", String.valueOf(reqCounter.get()));
         long startTime = System.currentTimeMillis();
         logger.info("Incoming request #{} | resource: {} | HTTP Verb: {}", reqCounter.get(), resource, httpVerb);
-        MDC.put("reqNum", String.valueOf(reqCounter.get()));
         return startTime;
     }
 
