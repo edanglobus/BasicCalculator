@@ -1,11 +1,16 @@
 package com.example.KaplatCalculatorApp.historydb;
 
+import com.example.KaplatCalculatorApp.database.DTO.CalculatorDocument;
+import com.example.KaplatCalculatorApp.database.DTO.CalculatorEntity;
+import com.example.KaplatCalculatorApp.database.repo.MangoRepository;
+import com.example.KaplatCalculatorApp.database.repo.PostgresRepository;
 import com.example.KaplatCalculatorApp.formats.JsonFormatForOperation;
 import com.example.KaplatCalculatorApp.service.Operator;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +18,13 @@ import java.util.List;
 @Repository("history")
 @Getter @Setter
 public class AppHistoryManager {
+    @Autowired
+    PostgresRepository postgresRepository;
+    CalculatorEntity calculatorEntity = new CalculatorEntity();
+    @Autowired
+    MangoRepository mangoRepository;
+    CalculatorDocument calculatorDocument = new CalculatorDocument();
+
     private final Logger loggerStack = LoggerFactory.getLogger("stack-logger");
     private final Logger loggerIndependent = LoggerFactory.getLogger("independent-logger");
     private List<JsonFormatForOperation> SOperationHistory = new ArrayList<>();
@@ -56,6 +68,10 @@ public class AppHistoryManager {
         writeResult(result);
     }
 
+    public JsonFormatForOperation getJsonFmtOperation() {
+        return currentOperation;
+    }
+
     public void addToHistory(String sORi) {
         switch(sORi) {
             case "s":
@@ -67,7 +83,35 @@ public class AppHistoryManager {
                 IOperationHistory.add(currentOperation);
                 break;
         }
+        loadAndSaveToDB();
         currentOperation = new JsonFormatForOperation();
+    }
+
+    private void loadAndSaveToDB() {
+        JsonFormatForOperation op = currentOperation;
+
+        calculatorEntity.setFlavor(op.getFlavor());
+        calculatorDocument.setFlavor(op.getFlavor());
+
+        calculatorEntity.setOperation(op.getOperation());
+        calculatorDocument.setOperation(op.getOperation());
+
+        calculatorEntity.setResult(op.getResult().intValue());
+        calculatorDocument.setResult(op.getResult().intValue());
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Double arg : op.getArguments()) {
+            stringBuilder.append(arg);
+            stringBuilder.append(", ");
+        }
+
+        String args = stringBuilder.toString();
+
+        calculatorEntity.setArguments(args);
+        calculatorDocument.setArguments(args);
+
+        postgresRepository.save(calculatorEntity);
+        mangoRepository.save(calculatorDocument);
     }
 
 }

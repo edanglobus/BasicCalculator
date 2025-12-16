@@ -1,10 +1,16 @@
 package com.example.KaplatCalculatorApp.service;
 
+import com.example.KaplatCalculatorApp.database.DTO.CalculatorDocument;
+import com.example.KaplatCalculatorApp.database.DTO.CalculatorEntity;
+import com.example.KaplatCalculatorApp.database.repo.MangoRepository;
+import com.example.KaplatCalculatorApp.database.repo.PostgresRepository;
+import com.example.KaplatCalculatorApp.formats.JsonFormatForOperation;
 import com.example.KaplatCalculatorApp.historydb.AppHistoryManager;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
@@ -15,6 +21,8 @@ import java.util.Stack;
 @Repository("calc")
 @Getter @Setter
 public class Calculator {
+
+
     private final Logger loggerStack = LoggerFactory.getLogger("stack-logger");
     private final Logger loggerIndependent = LoggerFactory.getLogger("independent-logger");
     private final AppHistoryManager history;
@@ -106,6 +114,7 @@ public class Calculator {
         history.writeAll(operator, cpyArgs,result);
         history.addToHistory("s");
 
+
         loggerStack.info("Performing operation {}. Result is {} | stack size: {}",
                 this.operator.getStrOp(),
                 result,
@@ -170,8 +179,12 @@ public class Calculator {
         List<Double> cpyArgs = new ArrayList<>(args);
         history.writeAll(operator, cpyArgs,result);
         history.addToHistory("i");
+
+
         loggerIndependent.info("Performing operation {}. Result is {}", operator.getStrOp(), result);
         loggerIndependent.debug("Performing operation: {}({}) = {}", operator.getStrOp(), args, result);
         return result;
     }
+
+
 }
